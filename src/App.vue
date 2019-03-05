@@ -1,17 +1,28 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <Members v-bind:members="members" />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+
+import Members from './components/Members';
+import axios from 'axios';
 
 export default {
   name: "app",
   components: {
-    HelloWorld
+    Members
+  },
+  data () {
+    return {
+      members: []
+    }
+  },
+  created() {
+    axios.get('https://api.myjson.com/bins/ldu3a')
+    .then(res => this.members = res.data)
+    .catch(err => console.log('Error: ', err));
   }
 };
 </script>
