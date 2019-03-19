@@ -1,4 +1,4 @@
-# fetch-data
+# cli
 
 ## Project setup
 ```
