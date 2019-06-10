@@ -1,18 +1,18 @@
 <template>
   <div class="home">
     <img width="300" alt="Spotify logo" src="../assets/spotifylogo.png">
-    <Playlists/>
+    <Songs/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Playlists from '@/components/Playlists.vue'
+import Songs from '@/components/Songs.vue'
 
 export default {
   name: 'home',
   components: {
-    Playlists
+    Songs
   }
 }
 </script>
