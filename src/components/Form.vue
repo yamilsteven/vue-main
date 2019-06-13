@@ -1,7 +1,17 @@
 <template>
   <div class="fields">
-    <input type="text" class="song-input" :placeholder="songPlaceholder" v-model="newSong" @keyup.enter="addSong">
-    <input type="text" class="song-input" :placeholder="artistPlaceholder" v-model="newArtist" @keyup.enter="addSong">
+    <input 
+      type="text" 
+      class="song-input" 
+      :placeholder="songPlaceholder" 
+      v-model="newSong" 
+      @keyup.enter="addSong">
+    <input 
+      type="text" 
+      class="song-input" 
+      :placeholder="artistPlaceholder" 
+      v-model="newArtist" 
+      @keyup.enter="addSong">
   </div>
 </template>
 
@@ -31,7 +41,7 @@ export default Vue.extend({
           score: 0
       };
       
-      this.$emit('create', newSongObj);
+      this.$store.dispatch('addSong', newSongObj);
     },
   }
 });

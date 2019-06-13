@@ -21,34 +21,26 @@ export default Vue.extend({
   name: 'Song',
 
   props: {
-    item: {
-      default: {},
+    song: {
+      default() {
+        return {}
+      },
       type: Object
-    }
-  },
-  data() {
-    return {
-      song: this.item,
     }
   },
   methods: {
     removeSong() {
-      this.$emit('remove');
+      this.$store.dispatch('removeSong', this.song.id);
     },
     likeSong: function(event) {
       if (event) {
-        this.song.score++;
-        this.updateSong();
+        this.$store.dispatch('likeSong', this.song.id);
       }
     },
     dislikeSong: function(event) {
-      if (this.song.score && event) {
-        this.song.score--;
-        this.updateSong();
+      if (event) {
+        this.$store.dispatch('dislikeSong', this.song.id);
       }
-    },
-    updateSong() {
-      this.$emit('update');
     }
   }
 });
