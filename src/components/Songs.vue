@@ -5,8 +5,8 @@
             />
         <h3>{{ numberPlaceholder }}{{ totalSongs }}</h3>
         <Song
-            v-for="(song, index) in songs"
-            :key="index"
+            v-for="(song, index) in sortedSongs"
+            :key="song.id"
             :item="song"
              @remove="removeSong(index, song)"
              @update="updateSong(index, song)"
