@@ -1,103 +1,71 @@
 <template>
     <div class="song">
-        <h3>{{ numberPlaceholder }}: {{ totalSongs }}</h3>
-        <input type="text" class="song-input" :placeholder="songPlaceholder" v-model="newSong" @keyup.enter="addSong">
-        <input type="text" class="song-input" :placeholder="artistPlaceholder" v-model="newArtist" @keyup.enter="addSong">
-        <div v-for="(song, index) in sortedSongs" :key="song.id" class="song-item">
-            <div class="song-title">
-                {{ song.title }} - {{ song.artist }}
-            </div>
-            <img class="thumb" @click="likeSong($event, index)" alt="logo" src="../assets/thumb.png">
-            <img class="thumb thumb--down" @click="dislikeSong($event, index)" alt="logo" src="../assets/thumb.png">
-            <div>
-                Score: {{ song.score }}
-            </div>
-            <div class="remove-song" @click="removeSong(index)">
-                &times;
-            </div>
-        </div>
+        <Form
+            @create="createSong"
+            />
+        <h3>{{ numberPlaceholder }}{{ totalSongs }}</h3>
+        <Song
+            v-for="(song, index) in songs"
+            :key="index"
+            :item="song"
+             @remove="removeSong(index, song)"
+             @update="updateSong(index, song)"
+            />
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
+import Form from '@/components/Form.vue'
+import Song from '@/components/Song.vue'
 
 export default {
     name: 'Songs',
-    data () {
+    components: { Form, Song },
+    data() {
         return {
-            endpoint: "my-json-server.typicode.com/yamilsteven/vue-main/blob/2-styled-component/songs",
-            numberPlaceholder: 'Number of Songs',
-            newSong: '',
-            newArtist: '',
-            totalSongs: 0,
-            songs: [],
-            songPlaceholder: 'New Song',
-            artistPlaceholder: 'New Artist'
+            endpoint: "https://my-json-server.typicode.com/kycrling/vue-main/songs",
+            numberPlaceholder: 'Number of Songs - ',
+            songs: []
         }
     },
-    created () {
+    created() {
         this.getSongs();
     },
     computed: {
         sortedSongs: function() {
-            function compare(a, b) {
-                return b.score - a.score;
-            }
-
             return this.songs.sort((a, b) => b.score - a.score);
+        },
+        totalSongs: function() {
+            return this.songs.length;
         }
     },
     methods: {
-        addSong() {
-            if(!this.newSong.trim().length || !this.newArtist.trim().length) {
-                return
-            }
-
-            const newSong = {
-                id: this.totalSongs,
-                title: this.newSong,
-                artist: this.newArtist,
-                score: 0
-            }
-            
-            axios.put(this.endpoint, newSong)
-            .then(response => {
-                this.getSongs();
-                this.newSong = '';
-                this.newArtist = '';
-            });
-        },
-        removeSong(index) {
-            const url = `${this.endpoint}/${index}`
-            axios.delete(url)
-            .then(response => {
-                this.getSongs();
-            });
-        },
-        likeSong: function(event, index) {
-            this.songs[index].score++;
-            this.updateSong(index);
-        },
-        dislikeSong: function(event, index) {
-            if (this.songs[index].score) {
-                this.songs[index].score--;
-                this.updateSong(index);
-            }
-        },
-        updateSong(index) {
-            const url = `${this.endpoint}/${index}`
-            axios.patch(url, this.songs[index])
-            .then(response => {
-                this.getSongs();
-            });
-        },
         getSongs() {
-            axios.get(this.endpoint)
-            .then(response => {
-                this.songs = response.data.songs;
-                this.totalSongs = this.songs.length;
-            });
+            //localStorage.removeItem('songs');
+            if(localStorage.getItem('songs')) {
+                this.songs = JSON.parse(localStorage.getItem('songs'));
+            } else {
+                axios.get(this.endpoint)
+                .then(response => {
+                    this.songs = response.data;
+                });
+            }
+        },
+        removeSong(index, song) {
+            this.songs.splice(index, 1);
+            this.updateSongs();
+        },
+        updateSong(index, song) {
+            this.songs[index] = song;
+            this.updateSongs();
+        },
+        createSong(song) {
+            this.songs.push(song);
+            this.updateSongs();
+        },
+        updateSongs() {
+            localStorage.setItem('songs', JSON.stringify(this.songs));
         }
     }
 }
